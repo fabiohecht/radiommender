@@ -1,0 +1,4 @@
+radiommender
+============
+
+Radiommender is a fully-distributed, peer-to-peer on-line radio. Users can share their music collection and explore music collections of other users. The difference to current file sharing and streaming systems is that songs do not need to be searched individually – a distributed recommender system is used to estimate user preference. Recommendation is done with a combination of an implicit voting system that assigns songs to search terms and an affinity network that correlates user interest. This software was produced as a demonstration for the P2P'12 conference and is in prototypical state.
