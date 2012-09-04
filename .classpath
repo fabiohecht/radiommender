@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="lib/jaudiotagger-2.0.4-20111207.115108-15-javadoc.jar"/>
+	<classpathentry kind="lib" path="lib/jaudiotagger-2.0.4-20111207.115108-15-sources.jar"/>
+	<classpathentry kind="lib" path="lib/jaudiotagger-2.0.4-20111207.115108-15.jar"/>
+	<classpathentry kind="lib" path="lib/javazoom/basicplayer3.0.jar"/>
+	<classpathentry kind="lib" path="lib/javazoom/commons-logging-api.jar"/>
+	<classpathentry kind="lib" path="lib/javazoom/jflac-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/javazoom/jl1.0.jar"/>
+	<classpathentry kind="lib" path="lib/javazoom/jmactritonusspi1.74.jar"/>
+	<classpathentry kind="lib" path="lib/javazoom/jogg-0.0.7.jar"/>
+	<classpathentry kind="lib" path="lib/javazoom/jorbis-0.0.15.jar"/>
+	<classpathentry kind="lib" path="lib/javazoom/jspeex0.9.7.jar"/>
+	<classpathentry kind="lib" path="lib/javazoom/kj_dsp1.1.jar"/>
+	<classpathentry kind="lib" path="lib/javazoom/mp3spi1.9.4.jar"/>
+	<classpathentry kind="lib" path="lib/javazoom/tritonus_share.jar"/>
+	<classpathentry kind="lib" path="lib/javazoom/vorbisspi1.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/jdbm-3.0-alpha.jar"/>
+	<classpathentry kind="lib" path="lib/jl1.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/jna-3.4.0.jar"/>
+	<classpathentry kind="lib" path="lib/miglayout-core-4.2.jar"/>
+	<classpathentry kind="lib" path="lib/miglayout-swing-4.2.jar"/>
+	<classpathentry kind="lib" path="lib/netty-3.5.1.Final.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-api-1.6.4.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-jdk14-1.6.4.jar"/>
+	<classpathentry kind="lib" path="lib/TomP2P-4.3-SNAPSHOT-javadoc.jar"/>
+	<classpathentry kind="lib" path="lib/TomP2P-4.3-SNAPSHOT-sources.jar"/>
+	<classpathentry kind="lib" path="lib/TomP2P-4.3-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/vlcj-2.1.0.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
