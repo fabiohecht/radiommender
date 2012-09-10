@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="lib" path="lib/jaudiotagger-2.0.4-20111207.115108-15-javadoc.jar"/>
 	<classpathentry kind="lib" path="lib/jaudiotagger-2.0.4-20111207.115108-15-sources.jar"/>
 	<classpathentry kind="lib" path="lib/jaudiotagger-2.0.4-20111207.115108-15.jar"/>
