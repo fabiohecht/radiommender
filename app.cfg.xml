@@ -1,19 +1,26 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-<comment>last changed: Mon Sep 03 00:24:19 CEST 2012</comment>
-<entry key="recommender.rating.playvalue">1</entry>
-<entry key="recommender.rating.ratingthreshold">5</entry>
-<entry key="recommender.rating.skipvalue">2</entry>
-<entry key="overlay.network.port">4001</entry>
-<entry key="overlay.network.bootstrap.ip"/>
-<entry key="songhandler.downloadlist.length">5</entry>
-<entry key="recommender.affinitylist.length">15</entry>
-<entry key="recommender.playlist.ratio">3</entry>
-<entry key="file.store.path">/Users/nicolasbar/Desktop/music/PrettyLights-Glowing In The Darkest Night</entry>
-<entry key="recommender.recommendedsongs.length">15</entry>
-<entry key="overlay.network.bootstrap.port">4001</entry>
-<entry key="file.testdata">/Users/nicolasbar/Uni/unizh/Module/Peer-to-Peer Systems/ChallengeTaskP2P/songs/</entry>
-<entry key="file.tmp.path">/tmp</entry>
-<entry key="overlay.network.peer.ip">192.168.66.101</entry>
+	<!-- storage paths -->
+	<entry key="file.store.path">/path/to/music</entry> <!-- path to local music directory -->
+	<entry key="file.tmp.path">/tmp</entry>	<!-- path to store downloaded music temporary -->
+	<entry key="file.testdata">/path/to/test/data</entry> <!-- used for test peers, needs to be activated -->
+	
+	<!-- overlay settings -->
+	<entry key="overlay.network.peer.ip">127.0.0.1</entry> <!-- local ip -->
+	<entry key="overlay.network.port">4001</entry> <!-- local port -->
+	<entry key="overlay.network.bootstrap.ip"/> <!-- bootstrap ip, empty means bootstrap node -->
+	<entry key="overlay.network.bootstrap.port">4001</entry> <!-- bootstrap port -->
+	
+	<!-- recommender settings -->
+	<entry key="recommender.rating.playvalue">1</entry>
+	<entry key="recommender.rating.ratingthreshold">5</entry>
+	<entry key="recommender.rating.skipvalue">2</entry>
+	<entry key="recommender.affinitylist.length">15</entry>
+	<entry key="recommender.playlist.ratio">3</entry>
+	<entry key="recommender.recommendedsongs.length">15</entry>
+	
+	<!-- song buffer -->
+	<entry key="songhandler.downloadlist.length">5</entry>
+	
 </properties>
