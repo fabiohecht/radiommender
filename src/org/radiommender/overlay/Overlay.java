@@ -280,7 +280,6 @@ public class Overlay implements OverlayPeer{
 	 * @throws IOException 
 	 */
 	public Object sendMessage(PeerAddress peerAddress, Object message) throws IOException{
-		// TODO send direct
 		FutureResponse fd = this.peer.sendDirect().setPeerAddress(peerAddress).setObject(message).start();
 		fd.awaitUninterruptibly();
 		
@@ -295,24 +294,21 @@ public class Overlay implements OverlayPeer{
 		return null;
 	}
 	
-	
+
+	/**
+	 * Looks up the three peers holding the given key and sends all of them the provided message
+	 * @param key lookup term
+	 * @param message message to send
+	 * @return response object
+	 * @throws IOException
+	 */
 	public Object lookupAndSendMessage(String key, Object message) throws IOException{
 		Number160 hash = Number160.createHash(key);
 		
-		// TODO send direct
 		FutureDHT fd = this.peer.send(hash).setDirectReplication( false ).setRefreshSeconds( 0 ).setObject(message).start();
 		fd.awaitUninterruptibly();
 		
-		//logger.info("overlay.network: send message to: " + peerAddress.getID());
-		
-		//if(fd.isSuccess()){
 		return fd.getObject();
-		//}
-		//else {
-		//	logger.warn("sending message failed: " + fd.getFailedReason());
-		//}
-		
-		//return null;
 	}
 	
 	/**

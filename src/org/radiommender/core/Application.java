@@ -62,8 +62,6 @@ public class Application {
 
 	}
 	
-	public static int voteUp = 1;
-	
 	/**
 	 * Main method. Use  this to start the program.
 	 * @param args bootstrapPeer, musicPath, port
@@ -106,10 +104,6 @@ public class Application {
 		else {
 			port = new Integer(ConfigurationFactory.getProperty("overlay.network.port"));
 		}
-		
-		if(args.length > 3){
-            voteUp = Integer.parseInt(args[3]);
-        }
 		
 		new Application(bootstrapIp, bootstrapPort, musicPath, port, port%10);
 	}

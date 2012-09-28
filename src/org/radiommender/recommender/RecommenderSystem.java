@@ -17,11 +17,12 @@
  */
 package org.radiommender.recommender;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.ArrayList;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
+
 import net.tomp2p.peers.PeerAddress;
 import net.tomp2p.peers.PeerMap;
 
@@ -32,6 +33,7 @@ import org.radiommender.overlay.Overlay;
 import org.radiommender.player.Player;
 import org.radiommender.recommender.affinitynetwork.AffinityComputer;
 import org.radiommender.recommender.affinitynetwork.AffinityPlayList;
+import org.radiommender.recommender.searchterm.SearchTermPlayList;
 import org.radiommender.songhandler.SongHandler;
 import org.radiommender.ui.Ui;
 import org.radiommender.utils.ConfigurationFactory;
@@ -65,7 +67,7 @@ public class RecommenderSystem {
 	private final Overlay overlay;
 	private final SongHandler songHandler;
 	private Player player;
-	private RecommenderPlayList recommenderPlayListThread;
+	private SearchTermPlayList recommenderPlayListThread;
 	private Thread rplThread;
 	private RecommenderFeeder  recommenderFeeder;
 	private int recommenderSwitcher;
@@ -116,7 +118,7 @@ public class RecommenderSystem {
 		//init player
 		this.player = player;
 		
-		this.recommenderPlayListThread = new RecommenderPlayList(this);
+		this.recommenderPlayListThread = new SearchTermPlayList(this);
 		
 		
 		//get local song list

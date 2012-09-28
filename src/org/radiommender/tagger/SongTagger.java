@@ -42,9 +42,6 @@ import net.tomp2p.storage.Data;
 /**
  * This class handles all the graph building to connect tags with other tags and tags with songs.
  * 
- * 
- * TODO Thread and Queue
- * 
  * @author nicolas baer
  */
 public class SongTagger implements Runnable{
@@ -136,7 +133,6 @@ public class SongTagger implements Runnable{
 		
 		// check for keyword
 		if(recommenderMap.get(mapObject) == null){
-			// TODO This does not work!
 			logger.info("Map for " + dhtKey + " does not yet contain: " + mapObject);
 			recommenderMap.put(mapObject, new Rating());
 		}

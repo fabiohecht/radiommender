@@ -15,15 +15,13 @@
  * http://www.gnu.org/licenses/.
  * 
  */
-package org.radiommender.recommender;
+package org.radiommender.recommender.searchterm;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -38,6 +36,7 @@ import org.radiommender.model.SongTag;
 import org.radiommender.model.SongTagRating;
 import org.radiommender.overlay.Overlay;
 import org.radiommender.player.Player;
+import org.radiommender.recommender.RecommenderSystem;
 import org.radiommender.utils.CountingBloomFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,14 +44,24 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * T
+ * This thread crawls the search term graph and builds the song list.
+ * The search algorithm is inspired by greedy search, but with a smaller universe.
+ * Not all tags and songs are crawled to build the song list, since it would probably take
+ * forever. However, a small part of the graph is retrieved and then within this small part the
+ * highest rated song will end up in the song list.
+ * 
  * @author robert erdin
  * @mail robert.erdin@gmail.com
- *
+ * 
+ * @author nicolas baer
+ * - implemented search algorithm -> complete rewrite
  */
-public class RecommenderPlayList extends Thread {
+public class SearchTermPlayList extends Thread {
+	private static final int SONGBASKETMAXSIZE = 15;
+	private static final int SONGBASKETMINSIZE = 5;
+	private static final int PENALTYTIME = 60000;
 	
-	Logger logger = LoggerFactory.getLogger(RecommenderPlayList.class);
+	Logger logger = LoggerFactory.getLogger(SearchTermPlayList.class);
 
 	boolean activated;
 	private final RecommenderSystem recommenderSystem;
@@ -60,7 +69,6 @@ public class RecommenderPlayList extends Thread {
 	private final Overlay overlay;
 	private final Player player;
 	private final ArrayList<SongRating> tmpOrdering;
-	private final HashSet<String> visitedNodes;
 	private boolean crawled = false;
 	
 	private HashSet<SongTag> visitedTags;
@@ -69,14 +77,17 @@ public class RecommenderPlayList extends Thread {
 	private ArrayList<SongRating> songs;
 	private ArrayList<SongTagRating> tags;
 	
-	public RecommenderPlayList(RecommenderSystem recommenderSystem) {
+	/**
+	 * default constructor
+	 * @param recommenderSystem
+	 */
+	public SearchTermPlayList(RecommenderSystem recommenderSystem) {
 		this.activated = true;
 		this.recommenderSystem = recommenderSystem;
 		this.recommendedSongs = this.recommenderSystem.getRecommendedSongsQueue();
 		this.overlay = this.recommenderSystem.getOverlay();
 		this.player = this.recommenderSystem.getPlayer();
 		this.tmpOrdering = new ArrayList<SongRating>();
-		this.visitedNodes = new HashSet<String>();
 		this.visitedTags = new HashSet<SongTag>();
 		this.visitedSongs = new HashSet<Song>();
 		this.playedSongs = new ArrayList<SongRating>();
@@ -97,12 +108,11 @@ public class RecommenderPlayList extends Thread {
 	
 	
 	/**
+	 * Search algorithm.
 	 * 
-	 * @param key
+	 * @param key search term from user input
 	 */
 	private void recommendSongsBySearchTerm(String key){
-		
-		
 		// loop through tags and find all songs
 		// loop while tags are remaining to crawl and less than 15 songs are found
 		float multiplicator = 1;
@@ -136,15 +146,13 @@ public class RecommenderPlayList extends Thread {
 			if(first){
 				// add first key to visited tags to avoid loops
 				this.visitedTags.add(new SongTag(key));
-				
 				bestSongTagRating.setSearchTermHistory(key);
-				
 				first = false;
 			}
 			
 			// get remote recommender map
 			RecommenderMap<Object, Rating> recommendations = this.fetchRemoteRecommenderMap(key, this.buildBloomFilter());
-			if(recommendations != null && this.activated){
+			if(recommendations != null && !recommendations.isEmpty() && this.activated){
 				for(Map.Entry<Object, Rating> entry : recommendations.entrySet()){
 					// its a song
 					if(entry.getKey() instanceof Song){
@@ -178,10 +186,25 @@ public class RecommenderPlayList extends Thread {
 						}
 					}
 				}
+			} else{
+				// check if there are any other tags to visit
+				if(this.tags.isEmpty() && this.songs.size() <= SONGBASKETMINSIZE && this.activated){
+					System.out.println("penalty!");
+					// clear the visited songs and tags, since we reached the end of the search graph
+					this.visitedSongs.clear();
+					this.visitedTags.clear();
+					
+					// give a penalty to peer, prevent spamming
+					try {
+						Thread.sleep(PENALTYTIME);
+					} catch (InterruptedException e) {
+						logger.debug(e.getMessage());
+					}
+				}
 			}
 			
 			// eventually add some songs to the queue
-			if(!songs.isEmpty() && songs.size() >= 5 && this.activated){
+			if(!songs.isEmpty() && songs.size() >= SONGBASKETMINSIZE && this.activated){
 				// sort songs
 				Collections.sort(songs);
 				
@@ -194,10 +217,9 @@ public class RecommenderPlayList extends Thread {
 				boolean attempt = false;
 				do{
 					try {
-						attempt = this.recommendedSongs.offer(new PlayListEntry(bestSongRating.getSong(), "ST", bestSongRating.getRating().getLocalRating()), 10, TimeUnit.MILLISECONDS);
+						attempt = this.recommendedSongs.offer(new PlayListEntry(bestSongRating.getSong(), "ST", bestSongRating.getRating().getLocalRating()), Integer.MAX_VALUE, TimeUnit.MILLISECONDS);
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						logger.debug(e.getMessage());
 					}
 				this.setCrawled(true);
 				}while(!attempt && this.activated);
@@ -205,19 +227,18 @@ public class RecommenderPlayList extends Thread {
 			}
 			
 			
-		} while (!tags.isEmpty() && songs.size() <= 15 && this.activated);	
+		} while (!tags.isEmpty() && songs.size() <= SONGBASKETMAXSIZE && this.activated);	
 		
 		// add at least one song to the queue
-		if(songs.size() <= 5 && this.activated){
+		if(songs.size() <= SONGBASKETMINSIZE && this.activated){
 			this.setCrawled(true);
 			for(SongRating sr : songs){
 				boolean attempt = false;
 				do{
 					try {
-						attempt = this.recommendedSongs.offer(new PlayListEntry(sr.getSong(), "ST", sr.getRating().getLocalRating()), 10, TimeUnit.MILLISECONDS);
+						attempt = this.recommendedSongs.offer(new PlayListEntry(sr.getSong(), "ST", sr.getRating().getLocalRating()), Integer.MAX_VALUE, TimeUnit.MILLISECONDS);
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						logger.debug(e.getMessage());
 					}
 				}while(!attempt && this.activated);
 				this.updateUI(sr);
@@ -226,7 +247,11 @@ public class RecommenderPlayList extends Thread {
 		}
 	}
 	
-	
+	/**
+	 * Creates a bloom filter of the visited songs and tags.
+	 * Used to send to the remote peer processing the recommender map.
+	 * @return bloom filter with visited songs and tags
+	 */
 	private CountingBloomFilter<Object> buildBloomFilter(){
 		CountingBloomFilter<Object> filter = new CountingBloomFilter<Object>(50, new int[500]);
 		
@@ -234,7 +259,6 @@ public class RecommenderPlayList extends Thread {
 		for(Song song : this.visitedSongs){
 			filter.add(song);
 		}
-		
 		
 		// add all songtags
 		for(SongTag songTag : this.visitedTags){
@@ -244,7 +268,15 @@ public class RecommenderPlayList extends Thread {
 		return filter;
 	}
 	
-	
+	/**
+	 * Fetches a recommender map from the peer holding the key. This is done by sending a message.
+	 * The response will be pruned. Due to the supply of a bloom filter with the already fetched songs
+	 * and tags, the pruning process will filter these.
+	 * 
+	 * @param key key to look for
+	 * @param filter bloom filter of songs and tags
+	 * @return recommender map
+	 */
 	private RecommenderMap<Object, Rating> fetchRemoteRecommenderMap(String key, CountingBloomFilter<Object> filter){
 		// create message and request object from peer.
 		// return will be a pruned map.
@@ -264,7 +296,10 @@ public class RecommenderPlayList extends Thread {
 		return null;
 	}
 
-	
+	/**
+	 * Updates the user interface with the current search term data.
+	 * @param songRating
+	 */
 	private void updateUI(SongRating songRating){
 		this.playedSongs.add(songRating);
 		ArrayList<SearchTermRankingEntry> ranking = new ArrayList<SearchTermRankingEntry>();
@@ -277,20 +312,23 @@ public class RecommenderPlayList extends Thread {
 
     @Override
 	public void run() {		
+    	// clear all lists
 		this.recommendedSongs.clear();
 		this.visitedSongs.clear();
 		this.visitedTags.clear();
 		this.playedSongs.clear();
 		
+		// clear songs and tags
 		this.songs.clear();
 		this.tags.clear();
-				
+		
+		// reset ui
 		recommenderSystem.getUi().updateSearchTermRanking(new ArrayList<SearchTermRankingEntry>());
 		
-		
-		logger.debug("recommendedSongs cleared, size: " + this.recommendedSongs.size());
+		// activate thread
 		this.activated = true;
 		
+		// start search term algorithm
 		String searchTerm = this.player.currentSearchTerm();
 		while(this.activated){
 			this.visitedTags.clear();
@@ -299,12 +337,7 @@ public class RecommenderPlayList extends Thread {
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			if (this.visitedSongs.size() > 12) {
-				this.visitedSongs.clear();
+				logger.debug(e.getMessage());
 			}
 		}		
 	}

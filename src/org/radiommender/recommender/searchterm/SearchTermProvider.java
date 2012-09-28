@@ -87,9 +87,7 @@ public class SearchTermProvider {
 			
 		});
 		
-		Collections.reverse(sortedEntntries); // make it descending...
-		//TODO: check if the comparator really works.
-		
+		Collections.reverse(sortedEntntries); // make it descending...		
 		
 		//check if a Set(Bloom Filter) was prvided, if not create empty dummy HashSet
 		if(filter == null){
@@ -100,7 +98,6 @@ public class SearchTermProvider {
 		boolean songFlag = false; // used to track whether there is a song in the map.
 		
 		// fill the result with the according SongTags and Songs.
-		// TODO: provide at least one Song! otherwise only SongTags may be provided.
 		int songCounter = 0;
 		for(int i = 0; i<this.pruningSize && !sortedEntntries.isEmpty();){
 			if (!sortedEntntries.isEmpty()) {

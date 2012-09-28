@@ -262,15 +262,12 @@ public class SongHandler {
 			
 			// store song tags
 			if(song != null){
-			    //TODO: remove the static hack!!
-			    for(int i=0;i<Application.voteUp;i++) {
-			        try{
-			            this.overlay.lookupAndSendMessage(song.getArtist(), new VotingMessage(song.getArtist(), new SongTag[]{new SongTag(song.getGenre())}, song, SongTagger.UPVOTE));
-			            this.overlay.lookupAndSendMessage(song.getGenre(), new VotingMessage(song.getGenre(), new SongTag[]{new SongTag(song.getArtist())}, song, SongTagger.UPVOTE));
-			        } catch (Exception e) {
-			            // nothing to do here
-			        }
-			    }
+		        try{
+		            this.overlay.lookupAndSendMessage(song.getArtist(), new VotingMessage(song.getArtist(), new SongTag[]{new SongTag(song.getGenre())}, song, SongTagger.UPVOTE));
+		            this.overlay.lookupAndSendMessage(song.getGenre(), new VotingMessage(song.getGenre(), new SongTag[]{new SongTag(song.getArtist())}, song, SongTagger.UPVOTE));
+		        } catch (Exception e) {
+		            // nothing to do here
+		        }
 			}
 		}
 	}

@@ -38,7 +38,6 @@ public class TSongTagReader {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		try {
 			Song song = new SongTagReader(new File("/Users/nicolasbar/Desktop/music/Waldeck/Fallen Angel.mp3")).getSongTags();
 			

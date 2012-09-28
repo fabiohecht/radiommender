@@ -73,14 +73,8 @@ public class SongTagReader {
 		song.setArtist(tag.getFirst(FieldKey.ARTIST));
 		song.setAlbum(tag.getFirst(FieldKey.ALBUM));
 		song.setTitle(tag.getFirst(FieldKey.TITLE));
+		song.setGenre(tag.getFirst(FieldKey.GENRE));
 		
-		// FIXME
-		String genre = tag.getFirst(FieldKey.GENRE);
-		if(genre.equals("17")){
-			song.setGenre("rock");
-		} else{
-			song.setGenre(tag.getFirst(FieldKey.GENRE));
-		}
 		
 		return song;
 	}

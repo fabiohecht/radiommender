@@ -75,14 +75,8 @@ public class SongPlayer implements Runnable{
 		while(this.active){
 			try {
 				// wait until song has finished
-				int round = 0;
 				while (this.vlcjPlayer.isPlaying() && !start && !this.songStopped) {
 					Thread.sleep(1000);
-					round++;
-					if(round == 25){
-						this.vlcjPlayer.pause();
-						this.vlcjPlayer.stop();
-					}
 				}
 				
 				// check if song was skipped
@@ -113,8 +107,9 @@ public class SongPlayer implements Runnable{
 					this.vlcjPlayer.play();
 					this.player.songPlaying(songFile.getSong(), playlistEntry.getOrigin());				
 	
+					// wait a few seconds -> player starts delayed
 					int counter = 0;
-					while((!this.vlcjPlayer.isPlaying() && counter < 20) && !this.songSkipped && !this.songStopped){
+					while((!this.vlcjPlayer.isPlaying() && counter < 5) && !this.songSkipped && !this.songStopped){
 						counter++;
 						Thread.sleep(1000);
 					}
